@@ -22,11 +22,11 @@ Aplikasi web untuk mengelola data buku, anggota, peminjaman, pengembalian, denda
 
 ![Halaman Login](docs/screenshots/01-login.png)
 
-### Dashboard Ã¢â‚¬â€ Statistik dan Grafik
+### Dashboard Statistik dan Grafik
 
 ![Dashboard Statistik dan Grafik](docs/screenshots/02-dashboard-overview.png)
 
-### Dashboard Ã¢â‚¬â€ Aktivitas Perpustakaan
+### Dashboard Aktivitas Perpustakaan
 
 ![Dashboard Aktivitas Perpustakaan](docs/screenshots/03-dashboard-aktivitas.png)
 
