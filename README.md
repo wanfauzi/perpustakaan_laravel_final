@@ -204,26 +204,6 @@ Sebelum publish ke GitHub:
 - Gunakan data dummy untuk screenshot dan demo publik.
 - Pada production, gunakan `APP_DEBUG=false`.
 
-## Perintah Berguna
 
-```bash
-php artisan route:list
-php artisan migrate:status
-php artisan optimize:clear
-php artisan view:cache
-php artisan test
-npm run build
-```
-
-## Pengembang
-
-Isi bagian berikut sebelum UAS:
-
-- Nama: `NAMA MAHASISWA`
-- NIM: `NIM MAHASISWA`
-- Mata kuliah: `NAMA MATA KULIAH`
-- Institusi: `NAMA INSTITUSI`
-
----
 
 Dibuat sebagai proyek Sistem Manajemen Perpustakaan berbasis Laravel.
