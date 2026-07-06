@@ -16,6 +16,36 @@ Aplikasi web untuk mengelola data buku, anggota, peminjaman, pengembalian, denda
 - Tampilan print-friendly dan export laporan PDF.
 - Automated test untuk autentikasi serta beberapa validasi dan alur penting.
 
+## Tampilan Aplikasi
+
+### Login
+
+![Halaman Login](docs/screenshots/01-login.png)
+
+### Dashboard — Statistik dan Grafik
+
+![Dashboard Statistik dan Grafik](docs/screenshots/02-dashboard-statistik.png)
+
+### Dashboard — Aktivitas Perpustakaan
+
+![Dashboard Aktivitas Perpustakaan](docs/screenshots/03-dashboard-tabel.png)
+
+### Data Buku
+
+![Halaman Data Buku](docs/screenshots/04-data-buku.png)
+
+### Data Anggota
+
+![Halaman Data Anggota](docs/screenshots/05-data-anggota.png)
+
+### Transaksi Peminjaman dan Pengembalian
+
+![Halaman Transaksi](docs/screenshots/06-transaksi.png)
+
+### Laporan Transaksi
+
+![Halaman Laporan Transaksi](docs/screenshots/07-laporan.png)
+
 ## Teknologi
 
 - PHP 8.3+
