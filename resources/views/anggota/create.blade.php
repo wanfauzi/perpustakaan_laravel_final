@@ -222,7 +222,7 @@
     // Initialize Flatpickr untuk tanggal lahir
     flatpickr("#tanggal_lahir", {
         dateFormat: "Y-m-d",
-        maxDate: "today",
+        maxDate: "{{ now()->subYears(5)->toDateString() }}",
         locale: "id",
         altInput: true,
         altFormat: "d F Y",

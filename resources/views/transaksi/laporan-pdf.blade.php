@@ -1,107 +1,159 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <meta charset="utf-8">
-    <title>Laporan Transaksi</title>
+    <meta charset="UTF-8">
+    <title>Laporan Transaksi Perpustakaan</title>
 
-    {{-- Bootstrap CSS --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
 </head>
+
 <body>
+<div class="container-fluid py-3">
 
-<div class="container-fluid">
-
+    {{-- Judul laporan --}}
     <div class="text-center mb-4">
-        <h3 class="fw-bold mb-1">Laporan Transaksi Perpustakaan</h3>
-        <p class="mb-0">Sistem Informasi Perpustakaan</p>
+        <h2 class="fw-bold mb-1">
+            Laporan Transaksi Perpustakaan
+        </h2>
+
+        <p class="text-muted mb-1">
+            Data peminjaman dan pengembalian buku
+        </p>
+
+        <small class="text-muted">
+            Dicetak pada {{ now()->format('d M Y, H:i') }} WIB
+        </small>
     </div>
 
-    <div class="row mb-4">
-        <div class="col-6">
-            <div class="border rounded p-3">
-                <p class="mb-1 text-muted">Total Transaksi</p>
-                <h4 class="fw-bold mb-0">{{ $totalTransaksi }}</h4>
-            </div>
-        </div>
+    {{-- Ringkasan --}}
+    <table
+        class="table table-bordered mb-4"
+        border="1"
+        cellspacing="0"
+        cellpadding="8"
+        width="100%">
 
-        <div class="col-6">
-            <div class="border rounded p-3">
-                <p class="mb-1 text-muted">Total Denda</p>
-                <h4 class="fw-bold mb-0">
+        <tr>
+            <td width="50%" class="text-center">
+                <strong>Total Transaksi</strong>
+                <br>
+                <span class="fs-4">
+                    {{ $totalTransaksi }}
+                </span>
+            </td>
+
+            <td width="50%" class="text-center">
+                <strong>Total Denda</strong>
+                <br>
+                <span class="fs-4">
                     Rp {{ number_format($totalDenda, 0, ',', '.') }}
-                </h4>
-            </div>
-        </div>
-    </div>
+                </span>
+            </td>
+        </tr>
+    </table>
 
-    <table class="table table-bordered table-striped table-sm">
+    {{-- Tabel transaksi --}}
+    <table
+        class="table table-bordered table-striped table-sm align-middle"
+        border="1"
+        cellspacing="0"
+        cellpadding="6"
+        width="100%">
+
         <thead class="table-light">
             <tr class="text-center">
-                <th>No</th>
-                <th>Kode</th>
-                <th>Anggota</th>
-                <th>Buku</th>
-                <th>Tgl Pinjam</th>
-                <th>Tgl Kembali</th>
-                <th>Tgl Dikembalikan</th>
-                <th>Status</th>
-                <th>Denda</th>
+                <th width="4%">No</th>
+                <th width="10%">Kode</th>
+                <th width="14%">Anggota</th>
+                <th width="18%">Buku</th>
+                <th width="10%">Pinjam</th>
+                <th width="10%">Batas Kembali</th>
+                <th width="10%">Dikembalikan</th>
+                <th width="10%">Status</th>
+                <th width="14%">Denda</th>
             </tr>
         </thead>
 
         <tbody>
             @forelse($transaksis as $transaksi)
                 <tr>
-                    <td class="text-center">{{ $loop->iteration }}</td>
-                    <td>{{ $transaksi->kode_transaksi }}</td>
-                    <td>{{ $transaksi->anggota->nama }}</td>
-                    <td>{{ $transaksi->buku->judul }}</td>
-                    <td>{{ $transaksi->tanggal_pinjam->format('d M Y') }}</td>
-                    <td>{{ $transaksi->tanggal_kembali->format('d M Y') }}</td>
+                    <td class="text-center">
+                        {{ $loop->iteration }}
+                    </td>
+
                     <td>
-                        @if($transaksi->tanggal_dikembalikan)
-                            {{ $transaksi->tanggal_dikembalikan->format('d M Y') }}
+                        {{ $transaksi->kode_transaksi }}
+                    </td>
+
+                    <td>
+                        {{ $transaksi->anggota?->nama ?? '-' }}
+                    </td>
+
+                    <td>
+                        {{ $transaksi->buku?->judul ?? '-' }}
+                    </td>
+
+                    <td class="text-center">
+                        {{ $transaksi->tanggal_pinjam?->format('d-m-Y') ?? '-' }}
+                    </td>
+
+                    <td class="text-center">
+                        {{ $transaksi->tanggal_kembali?->format('d-m-Y') ?? '-' }}
+                    </td>
+
+                    <td class="text-center">
+                        {{ $transaksi->tanggal_dikembalikan?->format('d-m-Y') ?? '-' }}
+                    </td>
+
+                    <td class="text-center">
+                        @if($transaksi->status === 'Dipinjam')
+                            <strong>Dipinjam</strong>
+                        @else
+                            <strong>Dikembalikan</strong>
+                        @endif
+                    </td>
+
+                    <td class="text-end">
+                        @if($transaksi->denda > 0)
+                            Rp {{ number_format($transaksi->denda, 0, ',', '.') }}
                         @else
                             -
                         @endif
                     </td>
-                    <td class="text-center">
-                        @if($transaksi->status == 'Dipinjam')
-                            <span class="badge bg-warning text-dark">Dipinjam</span>
-                        @else
-                            <span class="badge bg-success">Dikembalikan</span>
-                        @endif
-                    </td>
-                    <td class="text-end">
-                        Rp {{ number_format($transaksi->denda, 0, ',', '.') }}
-                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9" class="text-center text-muted">
-                        Tidak ada data transaksi
+                    <td colspan="9" class="text-center py-4">
+                        Tidak ada data transaksi sesuai filter.
                     </td>
                 </tr>
             @endforelse
         </tbody>
 
-        <tfoot>
-            <tr>
-                <th colspan="8" class="text-end">Total Denda</th>
-                <th class="text-end">
-                    Rp {{ number_format($totalDenda, 0, ',', '.') }}
-                </th>
-            </tr>
-        </tfoot>
+        @if($transaksis->isNotEmpty())
+            <tfoot class="table-light">
+                <tr>
+                    <th colspan="8" class="text-end">
+                        Total Denda
+                    </th>
+
+                    <th class="text-end">
+                        Rp {{ number_format($totalDenda, 0, ',', '.') }}
+                    </th>
+                </tr>
+            </tfoot>
+        @endif
     </table>
 
-    <div class="mt-4">
-        <p class="text-muted mb-0">
-            Dicetak pada: {{ now()->format('d M Y H:i') }}
-        </p>
+    {{-- Keterangan --}}
+    <div class="mt-3">
+        <small class="text-muted">
+            Laporan ini dibuat otomatis oleh Sistem Informasi Perpustakaan.
+        </small>
     </div>
 
 </div>
-
 </body>
 </html>

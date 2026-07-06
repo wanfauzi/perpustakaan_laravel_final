@@ -28,7 +28,7 @@ class StoreAnggotaRequest extends FormRequest
             'email'=> 'required|email|unique:anggota,email|max:100',
             'telepon'=> [
                 'required',
-                'regex:/^(\+62|62|0)[0-9]{9,12}$/',
+                'regex:/^(?:\+62|62|0)8[1-9][0-9]{7,10}$/',
                 'min:10',
                 'max:15',
             ],
@@ -36,7 +36,7 @@ class StoreAnggotaRequest extends FormRequest
             'tanggal_lahir'=> [
                 'required',
                 'date',
-                'before:today',
+                'before_or_equal:' . now()->subYears(5)->toDateString(),
                 'after:1900-01-01',
             ],
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
@@ -77,7 +77,7 @@ class StoreAnggotaRequest extends FormRequest
             
             'tanggal_lahir.required' => 'Tanggal lahir wajib diisi.',
             'tanggal_lahir.date' => 'Format tanggal lahir tidak valid.',
-            'tanggal_lahir.before' => 'Tanggal lahir harus sebelum hari ini.',
+            'tanggal_lahir.before_or_equal' => 'Anggota harus berusia minimal 5 tahun.',
             'tanggal_lahir.after' => 'Tanggal lahir tidak valid.',
             
             'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',

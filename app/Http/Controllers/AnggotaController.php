@@ -14,30 +14,51 @@ class AnggotaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $anggotas = Anggota::latest()->get();
-        
-        // Statistik
-        $totalAnggota = Anggota::count();
-        $anggotaAktif = Anggota::where('status', 'Aktif')->count();
-        $anggotaNonaktif = Anggota::where('status', 'Nonaktif')->count();
-        
-        return view('anggota.index', compact(
-            'anggotas',
-            'totalAnggota',
-            'anggotaAktif',
-            'anggotaNonaktif'
-        ));
+      return $this->search($request);
     }
  
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    // Show riwayat peminjaman anggota
+    public function show(Request $request, string $id)
     {
+        $request->validate([
+            'status' => 'nullable|in:Dipinjam,Dikembalikan',
+        ]);
+
         $anggota = Anggota::findOrFail($id);
-        return view('anggota.show', compact('anggota'));
+
+        // Statistik dihitung dari seluruh riwayat
+        $totalPinjam = $anggota->transaksis()->count();
+
+        $totalDenda = $anggota->transaksis()
+            ->sum('denda');
+
+        $sedangDipinjam = $anggota->transaksis()
+            ->where('status', 'Dipinjam')
+            ->count();
+
+        // Riwayat dapat difilter berdasarkan status
+        $riwayatQuery = $anggota->transaksis()
+            ->with('buku')
+            ->orderByDesc('tanggal_pinjam');
+
+        if ($request->filled('status')) {
+            $riwayatQuery->where('status', $request->status);
+        }
+
+        $riwayat = $riwayatQuery->get();
+
+        return view('anggota.show', compact(
+            'anggota',
+            'riwayat',
+            'totalPinjam',
+            'totalDenda',
+            'sedangDipinjam'
+        ));
     }
 
 
@@ -184,6 +205,8 @@ class AnggotaController extends Controller
     // Method export excel
     public function export()
     {
-        return Excel::download(new AnggotaExport(),'anggota_' . date('Y-m-d_His') . '.xlsx');
+        return Excel::download(
+            new AnggotaExport(),
+            'anggota_' . date('Y-m-d_His') . '.xlsx');
     }
 }

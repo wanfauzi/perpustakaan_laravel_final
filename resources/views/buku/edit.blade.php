@@ -51,23 +51,36 @@
                     
                     <div class="row">
                         {{-- Kategori --}}
-                        <div class="col-md-4 mb-3">
-                            <label for="kategori" class="form-label">
-                                Kategori <span class="text-danger">*</span>
+                        <div class="mb-3">
+
+                            <label for="kategori_id" class="form-label">
+                                Kategori
                             </label>
-                            <select name="kategori" 
-                                    id="kategori" 
-                                    class="form-select @error('kategori') is-invalid @enderror">
-                                <option value="">-- Pilih Kategori --</option>
-                                @foreach(['Programming', 'Database', 'Web Design', 'Networking', 'Data Science'] as $kat)
-                                    <option value="{{ $kat }}" 
-                                            {{ old('kategori', $buku->kategori) == $kat ? 'selected' : '' }}>
-                                        {{ $kat }}
+
+                            <select
+                                name="kategori_id"
+                                id="kategori_id"
+                                class="form-select @error('kategori_id') is-invalid @enderror"
+                                required>
+
+                                <option value="">Pilih Kategori</option>
+
+                                @foreach($kategoris as $kategori)
+                                    <option
+                                        value="{{ $kategori->id }}"
+                                        {{ old('kategori_id', $buku->kategori_id ?? '') == $kategori->id
+                                            ? 'selected'
+                                            : '' }}>
+
+                                        {{ $kategori->nama_kategori }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('kategori')
-                                <div class="invalid-feedback">{{ $message }}</div>
+
+                            @error('kategori_id')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
                             @enderror
                         </div>
                         
@@ -158,13 +171,13 @@
                             <label for="harga" class="form-label">
                                 Harga <span class="text-danger">*</span>
                             </label>
-                            <input type="number" 
+                            <input type="text"
+                                   inputmode="decimal"
                                    name="harga" 
                                    id="harga" 
                                    class="form-control @error('harga') is-invalid @enderror"
                                    value="{{ old('harga', $buku->harga) }}"
-                                   min="0"
-                                   step="1000">
+                                   placeholder="Contoh: 99900,00">
                             @error('harga')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -199,7 +212,7 @@
                         @enderror
                     </div>
                     
-                    <hr>
+                    
                     
                     {{-- Buttons --}}
                     <div class="d-flex justify-content-between">
@@ -220,8 +233,8 @@
                 <small class="text-muted">
                     <i class="bi bi-info-circle"></i>
                     <strong>Informasi:</strong><br />
-                    - Buku ditambahkan: {{ $buku->created_at->format('d M Y H:i') }}<br />
-                    - Terakhir diupdate: {{ $buku->updated_at->format('d M Y H:i') }}
+                    - Buku ditambahkan: {{ $buku->created_at->copy()->timezone('Asia/Jakarta')->format('d M Y H:i') }}<br />
+                    - Terakhir diupdate: {{ $buku->updated_at->copy()->timezone('Asia/Jakarta')->format('d M Y H:i') }}
                 </small>
             </div>
         </div>

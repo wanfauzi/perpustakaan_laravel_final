@@ -8,7 +8,7 @@ use App\Models\Buku;
 use App\Models\Anggota;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Validation\Rule;
  
 class TransaksiController extends Controller
 {
@@ -44,14 +44,16 @@ class TransaksiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'anggota_id' => 'required|exists:anggota,id',
+            'anggota_id' => [
+                'required',
+                Rule::exists('anggota', 'id')
+                    ->where(fn ($query) =>
+                        $query->where('status', 'Aktif')
+                    ),
+            ],
             'buku_id' => 'required|exists:buku,id',
-            'tanggal_pinjam' => 'required|date',
+            'tanggal_pinjam' => 'required|date|before_or_equal:today',
             'keterangan' => 'nullable|string',
-        ], [
-            'anggota_id.required' => 'Anggota wajib dipilih.',
-            'buku_id.required' => 'Buku wajib dipilih.',
-            'tanggal_pinjam.required' => 'Tanggal pinjam wajib diisi.',
         ]);
         
         try {
@@ -172,81 +174,5 @@ class TransaksiController extends Controller
         }
 
         return 0;
-}
-
-    // Export PDF
-    public function laporan(Request $request)
-    {
-        $query = Transaksi::with(['anggota', 'buku']);
-
-        // Filter range tanggal pinjam
-        if ($request->filled('dari')) {
-            $query->whereDate('tanggal_pinjam', '>=', $request->dari);
-        }
-
-        if ($request->filled('sampai')) {
-            $query->whereDate('tanggal_pinjam', '<=', $request->sampai);
-        }
-
-        // Filter status
-        if ($request->filled('status') && $request->status != 'Semua') {
-            $query->where('status', $request->status);
-        }
-
-        // Filter anggota
-        if ($request->filled('anggota_id')) {
-            $query->where('anggota_id', $request->anggota_id);
-        }
-
-        $transaksis = $query->orderBy('tanggal_pinjam', 'desc')->get();
-
-        $anggotas = Anggota::orderBy('nama')->get();
-
-        $totalTransaksi = $transaksis->count();
-        $totalDenda = $transaksis->sum('denda');
-
-        return view('transaksi.laporan', compact(
-            'transaksis',
-            'anggotas',
-            'totalTransaksi',
-            'totalDenda'
-        ));
-    }
-
-    public function exportPdf(Request $request)
-    {
-        $query = Transaksi::with(['anggota', 'buku']);
-
-        // Filter range tanggal pinjam
-        if ($request->filled('dari')) {
-            $query->whereDate('tanggal_pinjam', '>=', $request->dari);
-        }
-
-        if ($request->filled('sampai')) {
-            $query->whereDate('tanggal_pinjam', '<=', $request->sampai);
-        }
-
-        // Filter status
-        if ($request->filled('status') && $request->status != 'Semua') {
-            $query->where('status', $request->status);
-        }
-
-        // Filter anggota
-        if ($request->filled('anggota_id')) {
-            $query->where('anggota_id', $request->anggota_id);
-        }
-
-        $transaksis = $query->orderBy('tanggal_pinjam', 'desc')->get();
-
-        $totalTransaksi = $transaksis->count();
-        $totalDenda = $transaksis->sum('denda');
-
-        $pdf = Pdf::loadView('transaksi.laporan-pdf', compact(
-            'transaksis',
-            'totalTransaksi',
-            'totalDenda'
-        ))->setPaper('a4', 'landscape');
-
-        return $pdf->download('laporan-transaksi.pdf');
     }
 }

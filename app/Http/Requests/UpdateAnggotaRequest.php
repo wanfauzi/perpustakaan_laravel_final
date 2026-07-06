@@ -22,7 +22,7 @@ class UpdateAnggotaRequest extends FormRequest
     public function rules(): array
     {
         // Get anggota ID from route parameter
-        $anggotaId = $this->route('anggota');
+        $anggotaId = $this->route('anggotum');
         
         return [
             'kode_anggota' => 'required|string|max:20|unique:anggota,kode_anggota,' . $anggotaId,
@@ -30,7 +30,7 @@ class UpdateAnggotaRequest extends FormRequest
             'email' => 'required|email|unique:anggota,email,' . $anggotaId . '|max:100',
             'telepon' => [
                 'required',
-                'regex:/^(\+62|62|0)[0-9]{9,12}$/',
+                'regex:/^(?:\+62|62|0)8[1-9][0-9]{7,10}$/',
                 'min:10',
                 'max:15',
             ],
@@ -38,7 +38,7 @@ class UpdateAnggotaRequest extends FormRequest
             'tanggal_lahir' => [
                 'required',
                 'date',
-                'before:today',
+                'before_or_equal:' . now()->subYears(5)->toDateString(),
                 'after:1900-01-01',
             ],
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
@@ -61,7 +61,7 @@ class UpdateAnggotaRequest extends FormRequest
             'kode_anggota.unique' => 'Kode anggota sudah digunakan.',
             'email.unique' => 'Email sudah terdaftar.',
             'telepon.regex' => 'Format nomor telepon tidak valid. Contoh: 081234567890',
-            'tanggal_lahir.before' => 'Tanggal lahir harus sebelum hari ini.',
+            'tanggal_lahir.before_or_equal' => 'Anggota harus berusia minimal 5 tahun.',
             'tanggal_daftar.before_or_equal' => 'Tanggal pendaftaran tidak boleh di masa depan.',
         ];
     }

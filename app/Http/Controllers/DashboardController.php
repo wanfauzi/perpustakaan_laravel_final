@@ -49,11 +49,17 @@ class DashboardController extends Controller
             ->get();
 
         // Top 5 anggota aktif
-        $anggotaAktif = Anggota::withCount('transaksis')
+        $anggotaAktif = Anggota::where('status', 'Aktif')
+            ->withCount('transaksis')
             ->orderByDesc('transaksis_count')
             ->take(5)
             ->get();
-
+        // Daftar buku yang terlambat dikembalikan
+        $bukuTerlambat = Transaksi::where('status', 'Dipinjam')
+            ->whereDate('tanggal_kembali', '<', today())
+            ->with(['anggota', 'buku'])
+            ->orderBy('tanggal_kembali')
+            ->get();
         // Transaksi terbaru
         $recentTransaksi = Transaksi::with(['anggota', 'buku'])
             ->latest()
@@ -65,6 +71,7 @@ class DashboardController extends Controller
             'chartData',
             'bukuPopuler',
             'anggotaAktif',
+            'bukuTerlambat',
             'recentTransaksi'
         ));
     }

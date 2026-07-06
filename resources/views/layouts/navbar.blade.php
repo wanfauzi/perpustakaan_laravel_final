@@ -45,7 +45,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link {{ Request::is('transaksi/laporan') ? 'active' : '' }}" href="{{ route('transaksi.laporan') }}">
+                    <a class="nav-link {{ Request::is('laporan') ? 'active' : '' }}" href="{{ laporan.index') }}">
                         <i class="bi bi-file-earmark-text"></i> Laporan
                     </a>
                 </li>

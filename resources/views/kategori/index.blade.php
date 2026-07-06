@@ -1,104 +1,185 @@
 @extends('layouts.app')
 
+@section('title', 'Kategori Buku')
+
 @section('content')
 
-<div class="mb-4">
-
+<div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
     <div>
-        <h2 class="fw-bold mb-1">Kategori Buku</h2>
-        <p class="text-muted">
-            Daftar kategori yang tersedia di perpustakaan
+        <h2 class="fw-bold mb-1">
+            <i class="bi bi-tags text-primary me-1"></i>
+            Kategori Buku
+        </h2>
+
+        <p class="text-secondary mb-0">
+            Kelola kategori koleksi buku.
         </p>
     </div>
 
+    <div>
+        <a href="{{ route('kategori.create') }}"
+           class="btn btn-primary">
+
+            <i class="bi bi-plus-lg me-1"></i>
+            Tambah Kategori
+        </a>
+    </div>
 </div>
 
-<div class="card shadow-sm">
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show">
+        {{ session('success') }}
 
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show">
+        {{ session('error') }}
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+@endif
+
+<div class="card border-0 shadow-sm mb-4">
     <div class="card-body">
 
-        <div class="row mb-3">
+        <form action="{{ route('kategori.index') }}"
+              method="GET">
 
-            <div class="col-md-4">
+            <div class="row g-2">
+                <div class="col-md-10">
+                    <input
+                        type="search"
+                        name="keyword"
+                        value="{{ request('keyword') }}"
+                        class="form-control"
+                        placeholder="Cari nama atau deskripsi kategori">
+                </div>
 
-                <form action="/kategori/search" method="GET">
+                <div class="col-md-2 d-grid">
+                    <button type="submit"
+                            class="btn btn-primary">
 
-                    <div class="input-group">
-
-                        <input type="text"
-                               name="keyword"
-                               class="form-control"
-                               placeholder="Cari kategori">
-
-                        <button class="btn btn-primary">
-                            Cari
-                        </button>
-
-                    </div>
-
-                </form>
-
+                        <i class="bi bi-search me-1"></i>
+                        Cari
+                    </button>
+                </div>
             </div>
 
-        </div>
+        </form>
 
-        <table class="table table-hover">
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+
+    <div class="card-header bg-white py-3 d-flex justify-content-between">
+        <h5 class="fw-bold mb-0">
+            Daftar Kategori
+        </h5>
+
+        <span class="badge text-bg-primary">
+            {{ $kategoris->count() }} kategori
+        </span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
 
             <thead class="table-light">
-
                 <tr>
-                    <th>No</th>
+                    <th class="ps-3">No</th>
                     <th>Nama Kategori</th>
                     <th>Deskripsi</th>
                     <th>Jumlah Buku</th>
-                    <th width="120">Aksi</th>
+                    <th class="text-center">Aksi</th>
                 </tr>
-
             </thead>
 
             <tbody>
+                @forelse($kategoris as $kategori)
+                    <tr>
+                        <td class="ps-3">
+                            {{ $loop->iteration }}
+                        </td>
 
-                @foreach($kategori_list as $kategori)
+                        <td class="fw-semibold">
+                            {{ $kategori->nama_kategori }}
+                        </td>
 
-                <tr>
+                        <td>
+                            {{ $kategori->deskripsi ?: '-' }}
+                        </td>
 
-                    <td>{{ $loop->iteration }}</td>
+                        <td>
+                            <span class="badge text-bg-info">
+                                {{ $kategori->bukus_count }} buku
+                            </span>
+                        </td>
 
-                    <td>
-                        <strong>{{ $kategori['nama'] }}</strong>
-                    </td>
+                        <td>
+                            <div class="d-flex justify-content-center gap-1">
 
-                    <td>
-                        {{ $kategori['deskripsi'] }}
-                    </td>
+                                <a
+                                    href="{{ route('kategori.show', $kategori->id) }}"
+                                    class="btn btn-sm btn-outline-primary"
+                                    title="Detail">
 
-                    <td>
+                                    <i class="bi bi-eye"></i>
+                                </a>
 
-                        <span class="badge bg-primary">
-                            {{ $kategori['jumlah_buku'] }}
-                        </span>
+                                <a
+                                    href="{{ route('kategori.edit', $kategori->id) }}"
+                                    class="btn btn-sm btn-outline-warning"
+                                    title="Edit">
 
-                    </td>
+                                    <i class="bi bi-pencil"></i>
+                                </a>
 
-                    <td>
+                                <form
+                                    action="{{ route('kategori.destroy', $kategori->id) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
 
-                        <a href="/kategori/{{ $kategori['id'] }}"
-                           class="btn btn-sm btn-outline-primary">
+                                    @csrf
+                                    @method('DELETE')
 
-                            Detail
+                                    <button
+                                        type="submit"
+                                        class="btn btn-sm btn-outline-danger"
+                                        title="Hapus">
 
-                        </a>
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
 
-                    </td>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5"
+                            class="text-center text-secondary py-5">
 
-                </tr>
+                            <i class="bi bi-tags fs-1"></i>
 
-                @endforeach
-
+                            <p class="mb-0 mt-2">
+                                Belum ada kategori.
+                            </p>
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
 
         </table>
-
     </div>
 
 </div>

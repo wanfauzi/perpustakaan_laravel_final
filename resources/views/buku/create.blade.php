@@ -5,15 +5,17 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-md-10">
-        <div class="card">
+        <div class="card border-0 shadow-sm">
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">
                     <i class="bi bi-plus-circle"></i>
                     Tambah Buku Baru
                 </h4>
             </div>
+            
             <div class="card-body">
-                <form action="{{ route('buku.store') }}" method="POST">
+                <form id="form-buku" 
+                    action="{{ route('buku.store') }}" method="POST">
                     @csrf
                     
                     <div class="row">
@@ -27,7 +29,7 @@
                                    id="kode_buku" 
                                    class="form-control @error('kode_buku') is-invalid @enderror"
                                    value="{{ old('kode_buku') }}"
-                                   placeholder="Contoh: BK-001">
+                                   placeholder="Contoh: BK-PROG-001">
                             @error('kode_buku')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -51,36 +53,52 @@
                     </div>
                     
                     <div class="row">
-                        {{-- Kategori --}}
-                        <div class="col-md-4 mb-3">
-                            <label for="kategori" class="form-label">
-                                Kategori <span class="text-danger">*</span>
-                            </label>
-                            <select name="kategori" 
-                                    id="kategori" 
-                                    class="form-select @error('kategori') is-invalid @enderror">
-                                <option value="">-- Pilih Kategori --</option>
-                                <option value="Programming" {{ old('kategori') == 'Programming' ? 'selected' : '' }}>
-                                    Programming
-                                </option>
-                                <option value="Database" {{ old('kategori') == 'Database' ? 'selected' : '' }}>
-                                    Database
-                                </option>
-                                <option value="Web Design" {{ old('kategori') == 'Web Design' ? 'selected' : '' }}>
-                                    Web Design
-                                </option>
-                                <option value="Networking" {{ old('kategori') == 'Networking' ? 'selected' : '' }}>
-                                    Networking
-                                </option>
-                                <option value="Data Science" {{ old('kategori') == 'Data Science' ? 'selected' : '' }}>
-                                    Data Science
-                                </option>
-                            </select>
-                            @error('kategori')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                    {{-- Kategori --}}
+                        <div class="col-md-6">
+                            <div class="mb-3">
+
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label for="kategori_id" class="form-label mb-0">
+                                        Kategori
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <a href="{{ route('kategori.create') }}"
+                                    target="_blank"
+                                    class="btn btn-sm btn-outline-primary">
+
+                                        <i class="bi bi-plus-lg me-1"></i>
+                                        Tambah Kategori
+                                    </a>
+                                </div>
+
+                                <select
+                                    name="kategori_id"
+                                    id="kategori_id"
+                                    class="form-select @error('kategori_id') is-invalid @enderror">
+
+                                    <option value="">Pilih Kategori</option>
+
+                                    @foreach($kategoris as $kategori)
+                                        <option
+                                            value="{{ $kategori->id }}"
+                                            {{ old('kategori_id') == $kategori->id ? 'selected' : '' }}>
+
+                                            {{ $kategori->nama_kategori }}
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                                @error('kategori_id')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+
+                            </div>
                         </div>
-                        
+
+                                                
                         {{-- Pengarang --}}
                         <div class="col-md-4 mb-3">
                             <label for="pengarang" class="form-label">
@@ -114,9 +132,9 @@
                         </div>
                     </div>
                     
-                    <div class="row">
+                    <div class="row g-3">
                         {{-- Tahun Terbit --}}
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-4">
                             <label for="tahun_terbit" class="form-label">
                                 Tahun Terbit <span class="text-danger">*</span>
                             </label>
@@ -133,7 +151,7 @@
                         </div>
                         
                         {{-- ISBN --}}
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-4">
                             <label for="isbn" class="form-label">
                                 ISBN
                             </label>
@@ -149,7 +167,7 @@
                         </div>
                         
                         {{-- Bahasa --}}
-                        <div class="col-md-2 mb-3">
+                        <div class="col-md-4">
                             <label for="bahasa" class="form-label">
                                 Bahasa <span class="text-danger">*</span>
                             </label>
@@ -169,24 +187,26 @@
                         </div>
                         
                         {{-- Harga --}}
-                        <div class="col-md-2 mb-3">
+                        <div class="col-md-8 mb-3">
                             <label for="harga" class="form-label">
                                 Harga <span class="text-danger">*</span>
                             </label>
-                            <input type="number" 
+                            <input type="text"
+                                   inputmode="decimal"
                                    name="harga" 
                                    id="harga" 
                                    class="form-control @error('harga') is-invalid @enderror"
                                    value="{{ old('harga', 0) }}"
-                                   min="0"
-                                   step="1000">
+                                   placeholder="Contoh: 99900,00"
+                                   placeholder="0">
+
                             @error('harga')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         
                         {{-- Stok --}}
-                        <div class="col-md-2 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label for="stok" class="form-label">
                                 Stok <span class="text-danger">*</span>
                             </label>
@@ -215,8 +235,7 @@
                         @enderror
                     </div>
                     
-                    <hr>
-                    
+                  
                     {{-- Buttons --}}
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('buku.index') }}" class="btn btn-secondary">
@@ -235,28 +254,17 @@
  
 @push('scripts')
 <script>
-    // Auto format harga dengan thousand separator
-    document.getElementById('harga').addEventListener('blur', function() {
-        let value = this.value.replace(/\D/g, '');
-        this.value = value;
-    });
-</script>
-@endpush
+document
+    .getElementById('form-buku')
+    ?.addEventListener('submit', function () {
+        const button =
+            this.querySelector('button[type="submit"]');
 
-@push('scripts')
-<script>
-    // Pertemuan 12
-    // Loading state saat submit form
-    document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function() {
-            const submitBtn = this.querySelector('button[type="submit"]');
-
-            if (submitBtn && !this.classList.contains('delete-form')) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML =
-                    '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
-            }
-        });
+        button.disabled = true;
+        button.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Menyimpan...
+        `;
     });
 </script>
 @endpush

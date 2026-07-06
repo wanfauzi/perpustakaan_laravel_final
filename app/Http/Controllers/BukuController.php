@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreBukuRequest;
 use App\Http\Requests\UpdateBukuRequest;
 use App\Models\Buku;
+use App\Models\Kategori;
+use App\Exports\BukuExport;
+use Maatwebsite\Excel\Facades\Excel;
 
  
 class BukuController extends Controller
@@ -14,54 +17,47 @@ class BukuController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil semua data buku dari database
-        $bukus = Buku::latest()->get();
-        
-        // Statistik untuk card
-        $totalBuku = Buku::count();
-        $bukuTersedia = Buku::where('stok', '>', 0)->count();
-        $bukuHabis = Buku::where('stok', 0)->count();
-        
-        // Return view dengan data
-        return view('buku.index', compact(
-            'bukus',
-            'totalBuku',
-            'bukuTersedia',
-            'bukuHabis'
-        ));
+        return $this->search($request);
     }
  
     /**
      * Show the form for creating a new resource.
      */
+    // Controller buku baru kategori CRUD
     public function create()
     {
-        // Akan diimplementasi di pertemuan 12
-        return view('buku.create');
+    $kategoris = Kategori::orderBy('nama_kategori')->get();
+
+    return view('buku.create', compact('kategoris'));
     }
- 
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(StoreBukuRequest $request)
     {
-        // Akan diimplementasi di pertemuan 12
         try {
-        Buku::create($request->validated());
+            $kategori = Kategori::findOrFail($request->kategori_id);
 
-        // Redirect dengan succes message
-        return redirect()->route('buku.index')->with('success','Buku berhasil ditambahkan!');
+            $data = $request->validated();
+            $data['kategori'] = $kategori->nama_kategori;
 
+            Buku::create($data);
+
+            return redirect()
+                ->route('buku.index')
+                ->with('success', 'Buku berhasil ditambahkan!');
         } catch (\Exception $e) {
-            // Redirect dengan error message jika gagal
-            return redirect()->back()
-                            ->withInput()
-                            ->with('error', 'Gagal menambahkan buku: ' . $e->getMessage());
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Gagal menambahkan buku: ' . $e->getMessage());
         }
     }
-    /**
+        
+        /**
      * Display the specified resource.
      */
     public function show(string $id)
@@ -78,9 +74,16 @@ class BukuController extends Controller
      */
     public function edit(string $id)
     {
-        // Akan diimplementasi di pertemuan 12
+        // Ambil buku yang akan diedit
         $buku = Buku::findOrFail($id);
-        return view('buku.edit', compact('buku'));
+
+        // Ambil kategori untuk dropdown
+        $kategoris = Kategori::orderBy('nama_kategori')->get();
+
+        return view('buku.edit', compact(
+            'buku',
+            'kategoris'
+        ));
     }
  
     /**
@@ -88,23 +91,26 @@ class BukuController extends Controller
      */
     public function update(UpdateBukuRequest $request, string $id)
     {
-        // Akan diimplementasi di pertemuan 12
         try {
             $buku = Buku::findOrFail($id);
+            $kategori = Kategori::findOrFail($request->kategori_id);
 
-            // Update buku dengan validated data
-            $buku->update($request->validated());
+            $data = $request->validated();
+            $data['kategori'] = $kategori->nama_kategori;
 
-            // Redirect dengan success message
-            return redirect()->route('buku.show', $buku->id)
-                            ->with('success','Buku berhasil diupdate!');
+            $buku->update($data);
+
+            return redirect()
+                ->route('buku.show', $buku->id)
+                ->with('success', 'Data buku berhasil diperbarui!');
         } catch (\Exception $e) {
-            // Redirect dengan error message jika gagal
-            return redirect()->back()
-                            ->withInput()
-                            ->with('error', 'Gagal mengupdate buku: '. $e->getMessage());
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Gagal memperbarui buku: ' . $e->getMessage());
         }
     }
+
     /**
      * Remove the specified resource from storage.
      */
@@ -128,25 +134,7 @@ class BukuController extends Controller
                             ->with('error', 'Gagal menghapus buku: ' . $e->getMessage());
         }
     }
-    /**
-     * Filter buku berdasarkan kategori.
-     */
-    public function filterKategori($kategori)
-    {
-        $bukus = Buku::where('kategori', $kategori)->latest()->get();
-        
-        $totalBuku = $bukus->count();
-        $bukuTersedia = $bukus->where('stok', '>', 0)->count();
-        $bukuHabis = $bukus->where('stok', 0)->count();
-        
-        return view('buku.index', compact(
-            'bukus',
-            'totalBuku',
-            'bukuTersedia',
-            'bukuHabis',
-            'kategori'
-        ));
-    }
+    
 
     /**
      * TUGAS PERTEMUAN 11
@@ -170,10 +158,9 @@ class BukuController extends Controller
             });
         }
 
-        // Filter kategori
-        if ($request->filled('kategori')) {
-
-            $query->where('kategori', $request->kategori);
+        // Filter kategori terbaru
+        if ($request->filled('kategori_id')) {
+            $query->where('kategori_id', $request->kategori_id);
         }
 
         // Filter tahun terbit
@@ -202,8 +189,11 @@ class BukuController extends Controller
         $bukuTersedia = $bukus->where('stok', '>', 0)->count();
         $bukuHabis = $bukus->where('stok', 0)->count();
 
+        $kategoris = Kategori::orderBy('nama_kategori')->get();
+
         return view('buku.index', compact(
             'bukus',
+            'kategoris',
             'totalBuku',
             'bukuTersedia',
             'bukuHabis'
@@ -231,56 +221,13 @@ class BukuController extends Controller
     }
 
     /**
- * Export data buku ke CSV.
- */
+     * Export data buku ke CSV.
+     */
     public function export()
     {
-        $bukus = Buku::all();
-
-        $filename = 'buku_' . date('Y-m-d_His') . '.csv';
-
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
-
-        $callback = function () use ($bukus) {
-
-            $file = fopen('php://output', 'w');
-
-            // Header CSV
-            fputcsv($file, [
-                'Kode Buku',
-                'Judul',
-                'Kategori',
-                'Pengarang',
-                'Penerbit',
-                'Tahun',
-                'ISBN',
-                'Harga',
-                'Stok'
-            ]);
-
-            // Data Buku
-            foreach ($bukus as $buku) {
-
-                fputcsv($file, [
-                    $buku->kode_buku,
-                    $buku->judul,
-                    $buku->kategori,
-                    $buku->pengarang,
-                    $buku->penerbit,
-                    $buku->tahun_terbit,
-                    $buku->isbn,
-                    $buku->harga,
-                    $buku->stok,
-                ]);
-
-            }
-
-            fclose($file);
-        };
-
-    return response()->stream($callback, 200, $headers);
+        return Excel::download(
+            new BukuExport(),
+            'data-buku-' . now()->format('Y-m-d_His') . '.xlsx'
+        );
     }
 }

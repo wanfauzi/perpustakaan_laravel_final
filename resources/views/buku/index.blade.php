@@ -4,8 +4,74 @@
  
 @section('content')
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">
+            <i class="bi bi-book text-primary me-1"></i>
+            Data Buku
+        </h2>
+
+        <p class="text-secondary mb-0">
+            Kelola koleksi buku perpustakaan
+        </p>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a href="{{ route('buku.export') }}"
+           class="btn btn-outline-success">
+            <i class="bi bi-file-earmark-excel me-1"></i>
+                Export Excel
+        </a>
+
+        <a href="{{ route('buku.create') }}"
+           class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>
+            Tambah Buku
+        </a>
+    </div>
+</div>
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4">
+        <div class="card text-bg-primary border-0 shadow-sm h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="small opacity-75">Total Buku</div>
+                    <div class="fs-2 fw-bold">{{ $totalBuku }}</div>
+                </div>
+
+                <i class="bi bi-book-fill fs-1 opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-bg-success border-0 shadow-sm h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="small opacity-75">Buku Tersedia</div>
+                    <div class="fs-2 fw-bold">{{ $bukuTersedia }}</div>
+                </div>
+
+                <i class="bi bi-check-circle-fill fs-1 opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-bg-danger border-0 shadow-sm h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="small opacity-75">Buku Habis</div>
+                    <div class="fs-2 fw-bold">{{ $bukuHabis }}</div>
+                </div>
+
+                <i class="bi bi-x-circle-fill fs-1 opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 <div class="card mb-4">
     <div class="card-header bg-primary text-white">
@@ -29,30 +95,17 @@
 
                 <div class="col-md-2 mb-2">
 
-                    <select name="kategori" class="form-select">
-
+                    <select name="kategori_id" class="form-select">
                         <option value="">Semua Kategori</option>
 
-                        <option value="Programming">
-                            Programming
-                        </option>
+                        @foreach($kategoris as $kategori)
+                            <option
+                                value="{{ $kategori->id }}"
+                                {{ request('kategori_id') == $kategori->id ? 'selected' : '' }}>
 
-                        <option value="Database">
-                            Database
-                        </option>
-
-                        <option value="Web Design">
-                            Web Design
-                        </option>
-
-                        <option value="Networking">
-                            Networking
-                        </option>
-
-                        <option value="Data Science">
-                            Data Science
-                        </option>
-
+                                {{ $kategori->nama_kategori }}
+                            </option>
+                        @endforeach
                     </select>
 
                 </div>
@@ -125,122 +178,58 @@
     </div>
 </div>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
 
-    <h1>
-        <i class="bi bi-book"></i>
-        Daftar Buku
-    </h1>
-
-    <div>
-
-        <a
-            href="{{ route('buku.index') }}"
-            class="btn btn-success">
-
-            <i class="bi bi-download"></i>
-            Export CSV
-
-        </a>
-
-        <a
-            href="{{ route('buku.create') }}"
-            class="btn btn-primary">
-
-            <i class="bi bi-plus-circle"></i>
-            Tambah Buku
-
-        </a>
-
-    </div>
-
-</div>
-
-{{-- Statistik Cards --}}
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card border-primary">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted mb-1">Total Buku</h6>
-                        <h2 class="mb-0">{{ $totalBuku }}</h2>
-                    </div>
-                    <div class="text-primary">
-                        <i class="bi bi-book-fill" style="font-size: 3rem;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-4">
-        <div class="card border-success">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted mb-1">Buku Tersedia</h6>
-                        <h2 class="mb-0">{{ $bukuTersedia }}</h2>
-                    </div>
-                    <div class="text-success">
-                        <i class="bi bi-check-circle-fill" style="font-size: 3rem;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-4">
-        <div class="card border-danger">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted mb-1">Buku Habis</h6>
-                        <h2 class="mb-0">{{ $bukuHabis }}</h2>
-                    </div>
-                    <div class="text-danger">
-                        <i class="bi bi-x-circle-fill" style="font-size: 3rem;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
  
 {{-- Filter Kategori --}}
-<div class="card mb-4">
+<div class="card border-0 shadow-sm mb-4">
     <div class="card-body">
-        <h6 class="card-title">
-            <i class="bi bi-funnel"></i> Filter Kategori:
+
+        <h6 class="fw-bold mb-3">
+            <i class="bi bi-funnel me-1"></i>
+            Filter Kategori
         </h6>
-        <div class="btn-group" role="group">
-            <a href="{{ route('buku.index') }}" class="btn btn-sm {{ !isset($kategori) ? 'btn-primary' : 'btn-outline-primary' }}">
+
+        <div class="d-flex flex-wrap gap-2">
+
+            <a
+                href="{{ route(
+                    'buku.index',
+                    request()->except('kategori_id', 'page')
+                ) }}"
+                class="btn btn-sm {{ !request('kategori_id')
+                    ? 'btn-primary'
+                    : 'btn-outline-primary' }}">
+
                 Semua
             </a>
-            <a href="{{ route('buku.index', 'Programming') }}" class="btn btn-sm {{ isset($kategori) && $kategori == 'Programming' ? 'btn-primary' : 'btn-outline-primary' }}">
-                Programming
-            </a>
-            <a href="{{ route('buku.index', 'Database') }}" class="btn btn-sm {{ isset($kategori) && $kategori == 'Database' ? 'btn-primary' : 'btn-outline-primary' }}">
-                Database
-            </a>
-            <a href="{{ route('buku.index', 'Web Design') }}" class="btn btn-sm {{ isset($kategori) && $kategori == 'Web Design' ? 'btn-primary' : 'btn-outline-primary' }}">
-                Web Design
-            </a>
-            <a href="{{ route('buku.index', 'Networking') }}" class="btn btn-sm {{ isset($kategori) && $kategori == 'Networking' ? 'btn-primary' : 'btn-outline-primary' }}">
-                Networking
-            </a>
-            <a href="{{ route('buku.index', 'Data Science') }}" class="btn btn-sm {{ isset($kategori) && $kategori == 'Data Science' ? 'btn-primary' : 'btn-outline-primary' }}">
-                Data Science
-            </a>
+
+            @foreach($kategoris as $kategori)
+                <a
+                    href="{{ route(
+                        'buku.index',
+                        array_merge(
+                            request()->except('page'),
+                            ['kategori_id' => $kategori->id]
+                        )
+                    ) }}"
+                    class="btn btn-sm {{ request('kategori_id') == $kategori->id
+                        ? 'btn-primary'
+                        : 'btn-outline-primary' }}">
+
+                    {{ $kategori->nama_kategori }}
+                </a>
+            @endforeach
+
         </div>
     </div>
 </div>
  
 {{-- Daftar Buku --}}
 
-<form action="{{ route('buku.index') }}" method="POST">
+<form action="{{ route('buku.bulk-delete') }}" method="POST">
     @csrf
-
+    @method('DELETE')
+    
     <div class="d-flex align-items-center gap-3 mb-4">
 
         <div class="form-check">
@@ -273,30 +262,21 @@
 
         @forelse($bukus as $buku)
 
-            <div class="col-md-4 mb-4 position-relative">
+            <div class="col-md-6 col-xl-4 mb-4">
 
-                <div class="position-absolute top-0 end-0 m-2" style="z-index: 10;">
+                <x-buku-card
+                    :buku="$buku"
+                    :selectable="true"
+                />
 
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        name="buku_ids[]"
-                        value="{{ $buku->id }}">
-
-                </div>
-
-                <x-buku-card :buku="$buku" />
-
-        </div>
+            </div>
 
         @empty
 
             <div class="col-12">
-
                 <div class="alert alert-info">
                     Tidak ada data buku
                 </div>
-
             </div>
 
         @endforelse
@@ -310,9 +290,21 @@
         <p class="text-muted">
             Menampilkan {{ $bukus->count() }} buku
 
-            @isset($kategori)
-                dari kategori <strong>{{ $kategori }}</strong>
-            @endisset
+            @if(request('kategori_id'))
+                @php
+                    $kategoriDipilih = $kategoris->firstWhere(
+                        'id',
+                        (int) request('kategori_id')
+                    );
+                @endphp
+
+                @if($kategoriDipilih)
+                    dari kategori
+                    <strong>
+                        {{ $kategoriDipilih->nama_kategori }}
+                    </strong>
+                @endif
+            @endif
 
         </p>
     </div>
@@ -321,21 +313,20 @@
 
 @push('scripts')
 <script>
+    
+document.addEventListener('DOMContentLoaded', function () {
+    const selectAll = document.getElementById('select-all');
 
-document.getElementById('select-all')
-    .addEventListener('change', function() {
-
+    selectAll?.addEventListener('change', function () {
         document
             .querySelectorAll('input[name="buku_ids[]"]')
-            .forEach(cb => {
-
-                cb.checked = this.checked;
-
+            .forEach(function (checkbox) {
+                checkbox.checked = selectAll.checked;
             });
-
+    });
 });
-
 </script>
 @endpush
+
 
 @endsection

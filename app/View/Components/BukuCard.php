@@ -8,21 +8,20 @@ use Illuminate\View\Component;
 
 class BukuCard extends Component
 {
-    /**
-     * Create a new component instance.
-     */
     public $buku;
-    public $showActions;
+    public bool $showActions;
+    public bool $selectable;
 
-    public function __construct($buku, $showActions=true)
-    {
+    public function __construct(
+        $buku,
+        bool $showActions = true,
+        bool $selectable = false
+    ) {
         $this->buku = $buku;
         $this->showActions = $showActions;
+        $this->selectable = $selectable;
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
     public function render(): View|Closure|string
     {
         return view('components.buku-card');

@@ -2,233 +2,105 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kategori;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class KategoriController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-    $kategori_list = [
-        [
-            'id' => 1,
-            'nama' => 'Programming',
-            'deskripsi' => 'Buku pemrograman dan coding',
-            'jumlah_buku' => 25
-        ],
-        [
-            'id' => 2,
-            'nama' => 'Database',
-            'deskripsi' => 'Buku database',
-            'jumlah_buku' => 15
-        ],
-        [
-            'id' => 3,
-            'nama' => 'Networking',
-            'deskripsi' => 'Buku jaringan komputer',
-            'jumlah_buku' => 10
-        ],
-        [
-            'id' => 4,
-            'nama' => 'Web Design',
-            'deskripsi' => 'Buku desain web',
-            'jumlah_buku' => 12
-        ],
-        [
-            'id' => 5,
-            'nama' => 'Data Science',
-            'deskripsi' => 'Buku data science',
-            'jumlah_buku' => 20
-        ]
-    ];
+        $query = Kategori::withCount('bukus');
 
-    return view('kategori.index',
-        compact('kategori_list'));
+        if ($request->filled('keyword')) {
+            $keyword = $request->keyword;
+
+            $query->where(function ($q) use ($keyword) {
+                $q->where('nama_kategori', 'like', "%{$keyword}%")
+                    ->orWhere('deskripsi', 'like', "%{$keyword}%");
+            });
+        }
+
+        $kategoris = $query
+            ->orderBy('nama_kategori')
+            ->get();
+
+        return view('kategori.index', compact('kategoris'));
     }
 
-    // Method show
-    public function show($id)
+    public function create()
     {
-        $kategori_list = [
+        return view('kategori.create');
+    }
 
-            [
-                'id' => 1,
-                'nama' => 'Programming',
-                'deskripsi' => 'Buku pemrograman dan coding',
-                'jumlah_buku' => 25
-            ],
-
-            [
-                'id' => 2,
-                'nama' => 'Database',
-                'deskripsi' => 'Buku database',
-                'jumlah_buku' => 15
-            ],
-
-            [
-                'id' => 3,
-                'nama' => 'Networking',
-                'deskripsi' => 'Buku jaringan komputer',
-                'jumlah_buku' => 10
-            ],
-
-            [
-                'id' => 4,
-                'nama' => 'Web Design',
-                'deskripsi' => 'Buku desain web',
-                'jumlah_buku' => 12
-            ],
-
-            [
-                'id' => 5,
-                'nama' => 'Data Science',
-                'deskripsi' => 'Buku data science',
-                'jumlah_buku' => 20
-            ]
-
-        ];
-
-        $kategori = collect($kategori_list)
-            ->firstWhere('id', (int)$id);
-
-        if(!$kategori){
-            abort(404);
-        }
-
-        switch ($id) {
-
-            case 1:
-                $buku_list = [
-                    [
-                        'judul' => 'Pemrograman PHP',
-                        'penulis' => 'Budi Raharjo'
-                    ],
-                    [
-                        'judul' => 'Laravel Framework',
-                        'penulis' => 'Andi Nugroho'
-                    ],
-                    [
-                        'judul' => 'JavaScript Modern',
-                        'penulis' => 'Rina Wijaya'
-                    ]
-                ];
-                break;
-
-            case 2:
-                $buku_list = [
-                    [
-                        'judul' => 'MySQL Database',
-                        'penulis' => 'Siti Aminah'
-                    ],
-                    [
-                        'judul' => 'PostgreSQL Dasar',
-                        'penulis' => 'Ahmad Fauzi'
-                    ]
-                ];
-                break;
-
-            case 3:
-                $buku_list = [
-                    [
-                        'judul' => 'Cisco Networking',
-                        'penulis' => 'Rudi Hartono'
-                    ],
-                    [
-                        'judul' => 'Mikrotik Router',
-                        'penulis' => 'Dedi Santoso'
-                    ]
-                ];
-                break;
-
-            case 4:
-                $buku_list = [
-                    [
-                        'judul' => 'HTML & CSS',
-                        'penulis' => 'Eko Prasetyo'
-                    ],
-                    [
-                        'judul' => 'Bootstrap 5',
-                        'penulis' => 'Fitriani'
-                    ]
-                ];
-                break;
-
-            case 5:
-                $buku_list = [
-                    [
-                        'judul' => 'Data Science dengan Python',
-                        'penulis' => 'Wahyudi'
-                    ],
-                    [
-                        'judul' => 'Machine Learning Dasar',
-                        'penulis' => 'Rizky Saputra'
-                    ]
-                ];
-                break;
-
-            default:
-                $buku_list = [];
-            }
-            return view(
-                'kategori.show',
-                compact('kategori', 'buku_list')
-            );
-        }
-    // Method search
-    public function search(Request $request)
+    public function store(Request $request)
     {
-        $keyword = strtolower($request->keyword ?? '');
+        $validated = $request->validate([
+            'nama_kategori' => [
+                'required',
+                'string',
+                'max:50',
+                'unique:kategori,nama_kategori',
+            ],
+            'deskripsi' => 'nullable|string|max:500',
+        ]);
 
-        $kategori_list = [
-            [
-                'id' => 1,
-                'nama' => 'Programming',
-                'deskripsi' => 'Buku pemrograman dan coding',
-                'jumlah_buku' => 25
-            ],
-            [
-                'id' => 2,
-                'nama' => 'Database',
-                'deskripsi' => 'Buku database',
-                'jumlah_buku' => 15
-            ],
-            [
-                'id' => 3,
-                'nama' => 'Networking',
-                'deskripsi' => 'Buku jaringan komputer',
-                'jumlah_buku' => 10
-            ],
-            [
-                'id' => 4,
-                'nama' => 'Web Design',
-                'deskripsi' => 'Buku desain web',
-                'jumlah_buku' => 12
-            ],
-            [
-                'id' => 5,
-                'nama' => 'Data Science',
-                'deskripsi' => 'Buku data science',
-                'jumlah_buku' => 20
-            ]
-        ];
+        Kategori::create($validated);
 
-        $kategori_list = array_filter(
-            $kategori_list,
-            function ($kategori) use ($keyword) {
+        return redirect()
+            ->route('kategori.index')
+            ->with('success', 'Kategori berhasil ditambahkan.');
+    }
 
-                return str_contains(
-                    strtolower($kategori['nama']),
-                    $keyword
-                ) ||
-                str_contains(
-                    strtolower($kategori['deskripsi']),
-                    $keyword
+    public function show(Kategori $kategori)
+    {
+        $kategori->load([
+            'bukus' => fn ($query) => $query->latest(),
+        ]);
+
+        return view('kategori.show', compact('kategori'));
+    }
+
+    public function edit(Kategori $kategori)
+    {
+        return view('kategori.edit', compact('kategori'));
+    }
+
+    public function update(Request $request, Kategori $kategori)
+    {
+        $validated = $request->validate([
+            'nama_kategori' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('kategori', 'nama_kategori')
+                    ->ignore($kategori->id),
+            ],
+            'deskripsi' => 'nullable|string|max:500',
+        ]);
+
+        $kategori->update($validated);
+
+        return redirect()
+            ->route('kategori.index')
+            ->with('success', 'Kategori berhasil diperbarui.');
+    }
+
+    public function destroy(Kategori $kategori)
+    {
+        if ($kategori->bukus()->exists()) {
+            return redirect()
+                ->back()
+                ->with(
+                    'error',
+                    'Kategori tidak dapat dihapus karena masih digunakan oleh buku.'
                 );
-            }
-        );
+        }
 
-        return view(
-            'kategori.search',
-            compact('keyword', 'kategori_list')
-        );
+        $kategori->delete();
+
+        return redirect()
+            ->route('kategori.index')
+            ->with('success', 'Kategori berhasil dihapus.');
     }
 }

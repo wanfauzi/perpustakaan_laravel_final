@@ -189,7 +189,6 @@
                         </div>
                     </div>
                     
-                    <hr>
                     
                     {{-- Buttons --}}
                     <div class="d-flex justify-content-between">
@@ -210,8 +209,8 @@
                 <small class="text-muted">
                     <i class="bi bi-info-circle"></i>
                     <strong>Informasi:</strong><br />
-                    - Anggota terdaftar: {{ $anggota->created_at->format('d M Y H:i') }}<br />
-                    - Terakhir diupdate: {{ $anggota->updated_at->format('d M Y H:i') }}<br />
+                    - Anggota terdaftar: {{ $anggota->created_at->copy()->timezone('Asia/Jakarta')->format('d M Y H:i') }}<br />
+                    - Terakhir diupdate: {{ $anggota->updated_at->copy()->timezone('Asia/Jakarta')->format('d M Y H:i') }}<br />
                     - Lama menjadi anggota: {{ $anggota->lama_anggota }} hari ({{ round($anggota->lama_anggota / 365, 1) }} tahun)
                 </small>
             </div>
@@ -227,7 +226,7 @@
     // Initialize Flatpickr
     flatpickr("#tanggal_lahir", {
         dateFormat: "Y-m-d",
-        maxDate: "today",
+        maxDate: "{{ now()->subYears(5)->toDateString() }}",
         locale: "id",
         altInput: true,
         altFormat: "d F Y",

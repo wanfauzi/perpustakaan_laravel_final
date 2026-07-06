@@ -4,57 +4,242 @@
 
 @section('content')
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Dashboard</h2>
+        <p class="text-secondary mb-0">
+            Ringkasan aktivitas perpustakaan
+        </p>
+    </div>
 
-<div class="container-fluid py-4">
+    <div class="d-flex align-items-center gap-2">
+        <span class="text-secondary">
+            <i class="bi bi-calendar3 me-1"></i>
+            {{ now()->translatedFormat('d F Y') }}
+        </span>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">
-            <i class="bi bi-speedometer2"></i>
-            Dashboard Perpustakaan
-        </h2>
-
-        <a href="{{ route('transaksi.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i>
+        <a href="{{ route('transaksi.create') }}"
+           class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>
             Pinjam Buku
         </a>
     </div>
+</div>
 
-    {{-- Statistics Cards --}}
+   {{-- Informasi Data Perpustakaan --}}
+
     <div class="row g-3 mb-4">
-        @foreach([
-            ['Total Buku', $stats['total_buku'], 'bi-book', 'primary'],
-            ['Anggota Aktif', $stats['total_anggota'], 'bi-people', 'success'],
-            ['Sedang Dipinjam', $stats['sedang_dipinjam'], 'bi-journal-arrow-up', 'info'],
-            ['Terlambat', $stats['terlambat'], 'bi-exclamation-triangle', 'danger'],
-            ['Transaksi Hari Ini', $stats['transaksi_hari_ini'], 'bi-calendar-check', 'warning'],
-            ['Buku Tersedia', $stats['buku_tersedia'], 'bi-bookshelf', 'secondary'],
-            ['Total Transaksi', $stats['total_transaksi'], 'bi-receipt', 'dark'],
-            ['Denda Bulan Ini', 'Rp ' . number_format($stats['denda_bulan_ini'], 0, ',', '.'), 'bi-cash', 'danger'],
-        ] as [$label, $value, $icon, $color])
-            <div class="col-xl-3 col-md-6">
-                <div class="card border-{{ $color }} h-100 shadow-sm">
-                    <div class="card-body d-flex align-items-center">
-                        <i class="bi {{ $icon }} fs-1 text-{{ $color }} me-3"></i>
 
-                        <div>
-                            <h6 class="text-muted mb-1">{{ $label }}</h6>
-                            <h4 class="mb-0">{{ $value }}</h4>
+        {{-- Total Buku: Biru --}}
+        <div class="col-md-4">
+            <div class="card text-bg-primary border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small opacity-75 mb-1">
+                            Total Buku
                         </div>
+
+                        <div class="fs-2 fw-bold">
+                            {{ $stats['total_buku'] }}
+                        </div>
+
+                        <small class="opacity-75">
+                            Seluruh koleksi
+                        </small>
+                    </div>
+
+                    <i class="bi bi-book-fill fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        {{-- Buku Tersedia: Hijau --}}
+        <div class="col-md-4">
+            <div class="card text-bg-success border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small opacity-75 mb-1">
+                            Buku Tersedia
+                        </div>
+
+                        <div class="fs-2 fw-bold">
+                            {{ $stats['buku_tersedia'] }}
+                        </div>
+
+                        <small class="opacity-75">
+                            Siap dipinjam
+                        </small>
+                    </div>
+
+                    <i class="bi bi-check-circle-fill fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        {{-- Anggota: Cyan --}}
+        <div class="col-md-4">
+            <div class="card text-bg-info border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small opacity-75 mb-1">
+                            Anggota Aktif
+                        </div>
+
+                        <div class="fs-2 fw-bold">
+                            {{ $stats['total_anggota'] }}
+                        </div>
+
+                        <small class="opacity-75">
+                            Pengguna aktif
+                        </small>
+                    </div>
+
+                    <i class="bi bi-people-fill fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    
+    <div class="row g-3 mb-4">
+
+        {{-- Sedang Dipinjam: Kuning --}}
+        <div class="col-md-4">
+            <div class="card text-bg-warning border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small opacity-75 mb-1">
+                            Sedang Dipinjam
+                        </div>
+
+                        <div class="fs-2 fw-bold">
+                            {{ $stats['sedang_dipinjam'] }}
+                        </div>
+
+                        <small class="opacity-75">
+                            Belum dikembalikan
+                        </small>
+                    </div>
+
+                    <i class="bi bi-journal-arrow-up fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        {{-- Terlambat: Merah --}}
+        <div class="col-md-4">
+            <div class="card text-bg-danger border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small opacity-75 mb-1">
+                            Terlambat
+                        </div>
+
+                        <div class="fs-2 fw-bold">
+                            {{ $stats['terlambat'] }}
+                        </div>
+
+                        <small class="opacity-75">
+                            Perlu ditindaklanjuti
+                        </small>
+                    </div>
+
+                    <i class="bi bi-exclamation-triangle-fill fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        {{-- Hari Ini: Biru muda --}}
+        <div class="col-md-4">
+            <div class="card border-primary shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small text-primary mb-1">
+                            Transaksi Hari Ini
+                        </div>
+
+                        <div class="fs-2 fw-bold text-primary">
+                            {{ $stats['transaksi_hari_ini'] }}
+                        </div>
+
+                        <small class="text-secondary">
+                            Aktivitas terbaru
+                        </small>
+                    </div>
+
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3">
+                        <i class="bi bi-calendar-check-fill fs-3"></i>
                     </div>
                 </div>
             </div>
-        @endforeach
+        </div>
+
     </div>
 
+    <div class="row g-3 mb-4">
+
+        {{-- Total Transaksi: Gelap --}}
+        <div class="col-md-6">
+            <div class="card text-bg-dark border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small opacity-75 mb-1">
+                            Total Transaksi
+                        </div>
+
+                        <div class="fs-2 fw-bold">
+                            {{ $stats['total_transaksi'] }}
+                        </div>
+
+                        <small class="opacity-75">
+                            Seluruh riwayat transaksi
+                        </small>
+                    </div>
+
+                    <i class="bi bi-receipt-cutoff fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        {{-- Denda: Ungu --}}
+        <div class="col-md-6">
+            <div class="card text-white border-0 shadow-sm h-100"
+                style="background-color: #6f42c1;">
+
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="small opacity-75 mb-1">
+                            Denda Bulan Ini
+                        </div>
+
+                        <div class="fs-3 fw-bold">
+                            Rp {{ number_format(
+                                $stats['denda_bulan_ini'],
+                                0,
+                                ',',
+                                '.'
+                            ) }}
+                        </div>
+
+                        <small class="opacity-75">
+                            Total denda diterima
+                        </small>
+                    </div>
+
+                    <i class="bi bi-cash-coin fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+    </div>
     {{-- Charts --}}
     <div class="row mb-4">
         <div class="col-lg-8 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-white">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-primary-subtle text-primary-emphasis">
                     <strong>
-                        <i class="bi bi-graph-up"></i>
+                        <i class="bi bi-graph-up me-1"></i>
                         Transaksi 6 Bulan Terakhir
                     </strong>
                 </div>
@@ -66,10 +251,10 @@
         </div>
 
         <div class="col-lg-4 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-white">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success-subtle text-success-emphasis">
                     <strong>
-                        <i class="bi bi-pie-chart"></i>
+                        <i class="bi bi-pie-chart me-1"></i>
                         Top 5 Buku Populer
                     </strong>
                 </div>
@@ -90,7 +275,7 @@
     {{-- Top Buku dan Top Anggota --}}
     <div class="row mb-4">
         <div class="col-lg-6 mb-4">
-            <div class="card shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white">
                     <strong>
                         <i class="bi bi-bookmark-star"></i>
@@ -100,7 +285,7 @@
 
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle">
+                        <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th>No</th>
@@ -135,17 +320,17 @@
         </div>
 
         <div class="col-lg-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-white">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-info-subtle text-info-emphasis">
                     <strong>
-                        <i class="bi bi-person-check"></i>
+                        <i class="bi bi-person-check me-1"></i>
                         Top 5 Anggota Aktif
                     </strong>
                 </div>
 
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle">
+                        <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th>No</th>
@@ -180,18 +365,116 @@
         </div>
     </div>
 
+    {{-- Daftar Buku Terlambat --}}
+    <div class="card border-danger shadow-sm mb-4">
+
+        <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+            <strong>
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                Buku Terlambat
+            </strong>
+
+            <span class="badge bg-light text-danger">
+                {{ $bukuTerlambat->count() }} transaksi
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Anggota</th>
+                        <th>Buku</th>
+                        <th>Batas Kembali</th>
+                        <th>Keterlambatan</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @forelse($bukuTerlambat as $transaksi)
+                        <tr>
+                            <td class="ps-3">
+                                <div class="fw-semibold">
+                                    {{ $transaksi->anggota?->nama ?? '-' }}
+                                </div>
+
+                                <small class="text-secondary">
+                                    {{ $transaksi->anggota?->kode_anggota ?? '-' }}
+                                </small>
+                            </td>
+
+                            <td>
+                                <div class="fw-semibold">
+                                    {{ $transaksi->buku?->judul ?? '-' }}
+                                </div>
+
+                                <small class="text-secondary">
+                                    {{ $transaksi->kode_transaksi }}
+                                </small>
+                            </td>
+
+                            <td>
+                                {{ $transaksi->tanggal_kembali->format('d M Y') }}
+                            </td>
+
+                            <td>
+                                <span class="badge text-bg-danger">
+                                    Terlambat {{ $transaksi->terlambat }} hari
+                                </span>
+
+                                <div class="small text-danger mt-1">
+                                    Estimasi denda:
+                                    Rp {{ number_format(
+                                        $transaksi->terlambat * 5000,
+                                        0,
+                                        ',',
+                                        '.'
+                                    ) }}
+                                </div>
+                            </td>
+
+                            <td class="text-center">
+                                <a
+                                    href="{{ route('transaksi.show', $transaksi->id) }}"
+                                    class="btn btn-sm btn-outline-primary"
+                                    title="Lihat transaksi">
+
+                                    <i class="bi bi-eye"></i>
+                                    Detail
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-4">
+                                <i class="bi bi-check-circle-fill text-success fs-3"></i>
+
+                                <p class="text-secondary mb-0 mt-2">
+                                    Tidak ada buku yang terlambat dikembalikan.
+                                </p>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
 
     {{-- Recent Transactions --}}
     <div class="card shadow-sm">
-        <div class="card-header bg-white">
+        <div class="card-header bg-warning-subtle text-warning-emphasis">
             <strong>
-                <i class="bi bi-clock-history"></i>
+                <i class="bi bi-clock-history me-1"></i>
                 Transaksi Terbaru
             </strong>
         </div>
 
         <div class="card-body table-responsive">
-            <table class="table table-hover align-middle">
+            <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
                         <th>Kode</th>
@@ -245,73 +528,106 @@
         </div>
     </div>
 
-</div>
 
+@endsection
+
+@push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Line chart — Transaksi 6 bulan terakhir
-    new Chart(document.getElementById('chartTransaksi'), {
-        type: 'line',
-        data: {
-            labels: @json($chartData->pluck('bulan')),
-            datasets: [
-                {
-                    label: 'Peminjaman',
-                    data: @json($chartData->pluck('pinjam')),
-                    borderColor: '#0d6efd',
-                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
-                    tension: 0.3,
-                    fill: true
-                },
-                {
-                    label: 'Pengembalian',
-                    data: @json($chartData->pluck('kembali')),
-                    borderColor: '#198754',
-                    backgroundColor: 'rgba(25, 135, 84, 0.1)',
-                    tension: 0.3,
-                    fill: true
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
+document.addEventListener('DOMContentLoaded', function () {
+    const chartTransaksiElement =
+        document.getElementById('chartTransaksi');
 
-    @if($bukuPopuler->sum('transaksis_count') > 0)
-        // Pie chart — Top 5 buku populer
-        new Chart(document.getElementById('chartBuku'), {
-            type: 'pie',
+    if (chartTransaksiElement) {
+        new Chart(chartTransaksiElement, {
+            type: 'line',
+
             data: {
-                labels: @json($bukuPopuler->pluck('judul')),
-                datasets: [{
-                    data: @json($bukuPopuler->pluck('transaksis_count')),
-                    backgroundColor: [
-                        '#0d6efd',
-                        '#198754',
-                        '#ffc107',
-                        '#dc3545',
-                        '#6f42c1'
-                    ]
-                }]
+                labels: @json($chartData->pluck('bulan')),
+
+                datasets: [
+                    {
+                        label: 'Peminjaman',
+                        data: @json($chartData->pluck('pinjam')),
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Pengembalian',
+                        data: @json($chartData->pluck('kembali')),
+                        borderColor: '#198754',
+                        backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
             },
+
             options: {
                 responsive: true,
+                maintainAspectRatio: true,
+
                 plugins: {
                     legend: {
                         position: 'bottom'
                     }
+                },
+
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
                 }
             }
         });
-    @endif
-</script>
+    }
 
-@endsection
+    @if($bukuPopuler->sum('transaksis_count') > 0)
+        const chartBukuElement =
+            document.getElementById('chartBuku');
+
+        if (chartBukuElement) {
+            new Chart(chartBukuElement, {
+                type: 'doughnut',
+
+                data: {
+                    labels: @json($bukuPopuler->pluck('judul')),
+
+                    datasets: [{
+                        data: @json(
+                            $bukuPopuler->pluck('transaksis_count')
+                        ),
+
+                        backgroundColor: [
+                            '#0d6efd',
+                            '#198754',
+                            '#ffc107',
+                            '#dc3545',
+                            '#6f42c1'
+                        ],
+
+                        borderWidth: 0
+                    }]
+                },
+
+                options: {
+                    responsive: true,
+
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+    @endif
+});
+</script>
+@endpush
