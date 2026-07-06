@@ -1,6 +1,6 @@
 # Sistem Manajemen Perpustakaan
 
-Aplikasi web untuk mengelola data buku, anggota, peminjaman, pengembalian, denda, pencarian, dashboard, dan laporan transaksi. Proyek ini dibuat dengan Laravel sebagai persiapan UAS dan contoh penerapan pola MVC.
+Aplikasi web untuk mengelola data buku, anggota, peminjaman, pengembalian, denda, pencarian, dashboard, dan laporan transaksi. 
 
 ## Fitur Utama
 
@@ -221,19 +221,5 @@ php artisan test --filter=BookUpdateTest
 7. Gunakan Global Search.
 8. Filter laporan lalu buka print preview atau export PDF.
 9. Logout dan akses kembali route yang dilindungi.
-
-## Keamanan Repository
-
-File `.env`, dependency, log, cache, dan hasil build sudah diabaikan melalui `.gitignore`.
-
-Sebelum publish ke GitHub:
-
-- Pastikan `.env` tidak ikut ter-commit.
-- Jangan commit password, API key, atau data pribadi asli.
-- Tinjau file backup `.sql` sebelum memasukkannya ke repository.
-- Gunakan data dummy untuk screenshot dan demo publik.
-- Pada production, gunakan `APP_DEBUG=false`.
-
-
 
 Dibuat sebagai proyek Sistem Manajemen Perpustakaan berbasis Laravel.
