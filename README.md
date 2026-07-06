@@ -97,7 +97,7 @@ php artisan key:generate
 ```env
 APP_NAME="Perpustakaan"
 APP_ENV=local
-APP_DEBUG=true
+APP_DEBUG=false
 APP_URL=http://perpustakaan.test
 
 DB_CONNECTION=mysql
