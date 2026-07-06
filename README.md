@@ -22,13 +22,13 @@ Aplikasi web untuk mengelola data buku, anggota, peminjaman, pengembalian, denda
 
 ![Halaman Login](docs/screenshots/01-login.png)
 
-### Dashboard — Statistik dan Grafik
+### Dashboard Ã¢â‚¬â€ Statistik dan Grafik
 
-![Dashboard Statistik dan Grafik](docs/screenshots/02-dashboard-statistik.png)
+![Dashboard Statistik dan Grafik](docs/screenshots/02-dashboard-overview.png)
 
-### Dashboard — Aktivitas Perpustakaan
+### Dashboard Ã¢â‚¬â€ Aktivitas Perpustakaan
 
-![Dashboard Aktivitas Perpustakaan](docs/screenshots/03-dashboard-tabel.png)
+![Dashboard Aktivitas Perpustakaan](docs/screenshots/03-dashboard-aktivitas.png)
 
 ### Data Buku
 
@@ -40,7 +40,7 @@ Aplikasi web untuk mengelola data buku, anggota, peminjaman, pengembalian, denda
 
 ### Transaksi Peminjaman dan Pengembalian
 
-![Halaman Transaksi](docs/screenshots/06-transaksi.png)
+![Halaman Transaksi](docs/screenshots/06-data-transaksi.png)
 
 ### Laporan Transaksi
 
